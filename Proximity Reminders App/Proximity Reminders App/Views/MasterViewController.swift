@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import CoreData
 
 class MasterViewController: UITableViewController, UISplitViewControllerDelegate {
 
     var detailViewController: DetailViewController? = nil
-    var objects = [Any]()
+    var reminders: [Reminder] = []
 
 
     override func viewDidLoad() {
@@ -38,6 +39,17 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     override func viewWillAppear(_ animated: Bool) {
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
+     
+          self.definesPresentationContext = true
+     
+          let managedContext = CoreDataManager.shared.managedObjectContext
+          let fetchRequest = NSFetchRequest<Reminder>(entityName: "Reminder")
+     
+          do {
+               reminders = try managedContext.fetch(fetchRequest)
+          } catch let error as NSError {
+               print("could not fetch, \(error), \(error.userInfo)")
+          }
     }
 
     @objc
@@ -60,7 +72,7 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! String
+                let object = reminders[indexPath.row]
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
                 controller.detailItem = object
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
@@ -76,14 +88,14 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return objects.count
+        return reminders.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row] as! NSDate
-        cell.textLabel!.text = object.description
+        let object = reminders[indexPath.row]
+        cell.textLabel!.text = object.text
         return cell
     }
 
@@ -94,7 +106,16 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            objects.remove(at: indexPath.row)
+          let managedContext = CoreDataManager.shared.managedObjectContext
+          managedContext.delete(reminders[indexPath.row] as Reminder)
+          
+          do {
+               try managedContext.save()
+          } catch {
+               print("Failed to save")
+          }
+          
+            reminders.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.

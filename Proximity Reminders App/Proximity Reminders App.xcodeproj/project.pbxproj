@@ -14,6 +14,7 @@
 		2D782EA92203AA400073320F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D782EA82203AA400073320F /* Assets.xcassets */; };
 		2D782EAC2203AA400073320F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2D782EAA2203AA400073320F /* LaunchScreen.storyboard */; };
 		2D782EB52203C4880073320F /* Reminder.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2D782EB32203C4880073320F /* Reminder.xcdatamodeld */; };
+		2D8671342204C00B007142F2 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8671332204C00B007142F2 /* CoreDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		2D782EAB2203AA400073320F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2D782EAD2203AA400073320F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D782EB42203C4880073320F /* Reminder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Reminder.xcdatamodel; sourceTree = "<group>"; };
+		2D8671332204C00B007142F2 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				2D782E9F2203AA3E0073320F /* AppDelegate.swift */,
+				2D8671352204C00F007142F2 /* Model */,
 				2D782EB62203C4970073320F /* Views */,
 				2D782EA52203AA3E0073320F /* Main.storyboard */,
 				2D782EA82203AA400073320F /* Assets.xcassets */,
@@ -76,6 +79,14 @@
 				2D782EA32203AA3E0073320F /* DetailViewController.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		2D8671352204C00F007142F2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2D8671332204C00B007142F2 /* CoreDataManager.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -152,6 +163,7 @@
 				2D782EA42203AA3E0073320F /* DetailViewController.swift in Sources */,
 				2D782EA22203AA3E0073320F /* MasterViewController.swift in Sources */,
 				2D782EA02203AA3E0073320F /* AppDelegate.swift in Sources */,
+				2D8671342204C00B007142F2 /* CoreDataManager.swift in Sources */,
 				2D782EB52203C4880073320F /* Reminder.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

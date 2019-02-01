@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="18C54" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Location" representedClassName="Location" syncable="YES" codeGenerationType="class">
+    <entity name="Location" representedClassName="Location" parentEntity="Reminder" syncable="YES" codeGenerationType="class">
         <attribute name="latitude" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
         <attribute name="location" attributeType="String" syncable="YES"/>
         <attribute name="longitude" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="reminder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Reminder" inverseName="locale" inverseEntity="Reminder" syncable="YES"/>
     </entity>
     <entity name="Reminder" representedClassName="Reminder" syncable="YES" codeGenerationType="class">
         <attribute name="remindOnEntry" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="remindOnExit" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="text" attributeType="String" syncable="YES"/>
-        <relationship name="locale" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Location" syncable="YES"/>
+        <relationship name="locale" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Location" inverseName="reminder" inverseEntity="Location" syncable="YES"/>
+        <fetchedProperty name="fetchedProperty" optional="YES" syncable="YES">
+            <fetchRequest name="fetchedPropertyFetchRequest" entity="Reminder"/>
+        </fetchedProperty>
     </entity>
     <elements>
-        <element name="Reminder" positionX="-63" positionY="-18" width="128" height="105"/>
-        <element name="Location" positionX="-54" positionY="18" width="128" height="90"/>
+        <element name="Location" positionX="-54" positionY="18" width="128" height="105"/>
+        <element name="Reminder" positionX="-360.609375" positionY="55.12109375" width="128" height="134"/>
     </elements>
 </model>
