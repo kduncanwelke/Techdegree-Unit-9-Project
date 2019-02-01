@@ -34,11 +34,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="NqC-v4-iK7">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NqC-v4-iK7">
                                 <rect key="frame" x="0.0" y="64" width="375" height="220"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="220" id="sES-sv-APg"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="JEX-9P-axG" id="Fiu-02-Yd5"/>
+                                </connections>
                             </mapView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="KW8-iO-Cty">
                                 <rect key="frame" x="25" y="309" width="325" height="28"/>
@@ -49,7 +52,7 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1JF-Hr-b9f">
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="1JF-Hr-b9f">
                                         <rect key="frame" x="105" y="0.0" width="220" height="29"/>
                                         <segments>
                                             <segment title="Upon Entering"/>
@@ -80,7 +83,7 @@
                         <viewLayoutGuide key="safeArea" id="VUw-jc-0yf"/>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Detail" id="mOI-FS-AaM">
+                    <navigationItem key="navigationItem" title="Add New Reminder" id="mOI-FS-AaM">
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="bDc-CN-7yc">
                             <connections>
                                 <action selector="saveTapped:" destination="JEX-9P-axG" id="fqd-kE-LnL"/>
@@ -88,6 +91,8 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="mapView" destination="NqC-v4-iK7" id="dL2-RX-cW4"/>
+                        <outlet property="notificationTime" destination="1JF-Hr-b9f" id="I26-Dt-Ph4"/>
                         <outlet property="reminderTextField" destination="Xc5-3I-RgD" id="hvg-35-ZLB"/>
                     </connections>
                 </viewController>
@@ -146,7 +151,7 @@
                             <outlet property="delegate" destination="7bK-jq-Zjz" id="RA6-mI-bju"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Master" id="Zdf-7t-Un8"/>
+                    <navigationItem key="navigationItem" title="Reminders" id="Zdf-7t-Un8"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>
             </objects>

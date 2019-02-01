@@ -40,17 +40,23 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
      
-          self.definesPresentationContext = true
+        self.definesPresentationContext = true
      
+        loadReminders()
+    }
+     
+     func loadReminders() {
           let managedContext = CoreDataManager.shared.managedObjectContext
           let fetchRequest = NSFetchRequest<Reminder>(entityName: "Reminder")
-     
+          
           do {
                reminders = try managedContext.fetch(fetchRequest)
           } catch let error as NSError {
                print("could not fetch, \(error), \(error.userInfo)")
           }
-    }
+          
+          tableView.reloadData()
+     }
 
     @objc
     func insertNewObject(_ sender: Any) {
