@@ -11,7 +11,11 @@ import CoreData
 import CoreLocation
 import MapKit
 
-class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate {
+class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        
+    }
+    
     
     @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var notificationTime: UISegmentedControl!
@@ -32,24 +36,32 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestLocation()
         
-        // set up search bar
-        searchController.delegate = self
-        let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
-        searchController = UISearchController(searchResultsController: locationSearchTable)
-        searchController.searchResultsUpdater = locationSearchTable
+        // set up search bar        
+        let resultsTableController = LocationSearchTable()
         
-        searchContainer.addSubview(searchController.searchBar)
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Type to search . . ."
-        searchController.dimsBackgroundDuringPresentation = true
-        searchController.definesPresentationContext = true
+        resultsTableController.tableView.delegate = self
+        
+        searchController = UISearchController(searchResultsController: resultsTableController)
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.autocapitalizationType = .none
+        
+        navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-    }
-    
-    override func viewDidLayoutSubviews() {
-        var searchBarFrame = searchController.searchBar.frame
-        searchBarFrame.size.width = searchContainer.frame.size.width
-        searchController.searchBar.frame = searchBarFrame
+        
+        searchController.searchBar.placeholder = "Type to search . . ."
+        searchController.delegate = self
+        searchController.dimsBackgroundDuringPresentation = false // The default is true.
+        searchController.searchBar.delegate = self // Monitor when the search button is tapped.
+        
+        /** Search presents a view controller by applying normal view controller presentation semantics.
+         This means that the presentation moves up the view controller hierarchy until it finds the root
+         view controller or one that defines a presentation context.
+         */
+        
+        /** Specify that this view controller determines how the search controller is presented.
+         The search controller should be presented modally and match the physical size of this view controller.
+         */
+        definesPresentationContext = true
     }
     
     func configureView() {
