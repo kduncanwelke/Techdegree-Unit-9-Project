@@ -11,15 +11,16 @@ import CoreData
 import CoreLocation
 import MapKit
 
-class DetailViewController: UIViewController, CLLocationManagerDelegate {
+class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate {
     
     @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var notificationTime: UISegmentedControl!
-    
+    @IBOutlet weak var searchContainer: UIView!
     @IBOutlet weak var mapView: MKMapView!
     
     var detailItem: Reminder?
     let locationManager = CLLocationManager()
+    var searchController = UISearchController(searchResultsController: nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,25 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.requestAlwaysAuthorization()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestLocation()
+        
+        // set up search bar
+        searchController.delegate = self
+        let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
+        searchController = UISearchController(searchResultsController: locationSearchTable)
+        searchController.searchResultsUpdater = locationSearchTable
+        
+        searchContainer.addSubview(searchController.searchBar)
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Type to search . . ."
+        searchController.dimsBackgroundDuringPresentation = true
+        searchController.definesPresentationContext = true
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+    
+    override func viewDidLayoutSubviews() {
+        var searchBarFrame = searchController.searchBar.frame
+        searchBarFrame.size.width = searchContainer.frame.size.width
+        searchController.searchBar.frame = searchBarFrame
     }
     
     func configureView() {
@@ -102,8 +122,6 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate {
             navController.popViewController(animated: true)
         }
     }
-    
-
 }
 
 
