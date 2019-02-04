@@ -12,10 +12,6 @@ import CoreLocation
 import MapKit
 
 class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UISearchBarDelegate {
-    func updateSearchResults(for searchController: UISearchController) {
-        
-    }
-    
     
     @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var notificationTime: UISegmentedControl!
@@ -36,31 +32,26 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestLocation()
         
-        // set up search bar        
+        // set up search bar
         let resultsTableController = LocationSearchTable()
         
         resultsTableController.tableView.delegate = self
+        resultsTableController.mapView = mapView
         
         searchController = UISearchController(searchResultsController: resultsTableController)
         searchController.searchResultsUpdater = self
         searchController.searchBar.autocapitalizationType = .none
         
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
-        
         searchController.searchBar.placeholder = "Type to search . . ."
         searchController.delegate = self
         searchController.dimsBackgroundDuringPresentation = false // The default is true.
         searchController.searchBar.delegate = self // Monitor when the search button is tapped.
-        
-        /** Search presents a view controller by applying normal view controller presentation semantics.
-         This means that the presentation moves up the view controller hierarchy until it finds the root
-         view controller or one that defines a presentation context.
-         */
-        
-        /** Specify that this view controller determines how the search controller is presented.
-         The search controller should be presented modally and match the physical size of this view controller.
-         */
+    }
+    
+    // assign searchController as navigationItem here, otherwise split view won't display it
+    override func viewDidAppear(_ animated: Bool) {
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
     }
     
@@ -176,5 +167,9 @@ extension DetailViewController {
             // no location was available
             completionHandler(nil)
         }
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        
     }
 }

@@ -14,7 +14,6 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     var detailViewController: DetailViewController? = nil
     var reminders: [Reminder] = []
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -39,8 +38,6 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     override func viewWillAppear(_ animated: Bool) {
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
-     
-        self.definesPresentationContext = true
      
         loadReminders()
     }
