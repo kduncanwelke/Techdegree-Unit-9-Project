@@ -56,6 +56,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
         return false
     }
+    
+    // more preventing strange split view behavior (https://forums.developer.apple.com/thread/88774)
+    func splitViewController(_ splitViewController: UISplitViewController, showDetail vc: UIViewController, sender: Any?) -> Bool {
+        if splitViewController.isCollapsed, let navController = vc as? UINavigationController {
+            if let detailVC = navController.topViewController {
+                splitViewController.showDetailViewController(detailVC, sender: sender)
+                return true
+            }
+        }
+        return false
+    }
 
 }
 
