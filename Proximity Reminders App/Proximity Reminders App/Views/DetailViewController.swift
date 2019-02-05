@@ -39,7 +39,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         resultsTableController.mapView = mapView
         
         searchController = UISearchController(searchResultsController: resultsTableController)
-        searchController.searchResultsUpdater = self
+        searchController.searchResultsUpdater = resultsTableController
         searchController.searchBar.autocapitalizationType = .none
         
         searchController.searchBar.placeholder = "Type to search . . ."
@@ -170,6 +170,7 @@ extension DetailViewController {
     }
     
     func updateSearchResults(for searchController: UISearchController) {
+        print("input")
         
     }
 }
