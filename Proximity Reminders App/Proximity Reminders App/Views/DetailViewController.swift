@@ -11,7 +11,7 @@ import CoreData
 import CoreLocation
 import MapKit
 
-class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UISearchBarDelegate {
+class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UISearchBarDelegate, MapPinDelegate {
     
     @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var notificationTime: UISegmentedControl!
@@ -35,8 +35,11 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         // set up search bar
         let resultsTableController = LocationSearchTable()
         
-        resultsTableController.tableView.delegate = self
+        resultsTableController.tableView.delegate = resultsTableController
         resultsTableController.mapView = mapView
+        
+        // set delegate for map pin
+        resultsTableController.delegate = self
         
         searchController = UISearchController(searchResultsController: resultsTableController)
         searchController.searchResultsUpdater = resultsTableController
@@ -115,6 +118,11 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         }
     }
     
+    func getLocation(for pin: MKAnnotation) {
+        mapView.addAnnotation(pin)
+        print("map annotation function called")
+    }
+    
     @IBAction func saveTapped(_ sender: Any) {
         saveEntry()
         if let masterViewController = splitViewController?.primaryViewController {
@@ -133,9 +141,9 @@ extension DetailViewController {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
             print("\(lat) \(long)")
-    
-            let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-            let region = MKCoordinateRegion(center: location.coordinate, span: span)
+            let regionRadius: CLLocationDistance = 1000
+           
+            let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
             mapView.setRegion(region, animated: true)
         } else {
             print("no coordinates found")
@@ -170,7 +178,5 @@ extension DetailViewController {
     }
     
     func updateSearchResults(for searchController: UISearchController) {
-        print("input")
-        
     }
 }
