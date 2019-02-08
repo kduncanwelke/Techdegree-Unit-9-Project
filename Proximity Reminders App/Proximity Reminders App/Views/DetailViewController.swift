@@ -21,6 +21,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
     var detailItem: Reminder?
     let locationManager = CLLocationManager()
     var searchController = UISearchController(searchResultsController: nil)
+     var currentAnnotation: MKAnnotation?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,7 +75,17 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         } else {
             return
         }
-        
+     
+          print("location")
+          print("===================================")
+          print(detail.location)
+     
+          guard let location = detail.location else {
+               return
+          }
+     
+          print(location.latitude)
+          print(location.longitude)
     }
     
     func saveEntry() {
@@ -83,19 +94,32 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         // save new entry if no item was selected from previous view
         guard let selection = detailItem else {
             let newReminder = Reminder(context: managedContext)
-            
-            getEntry(reminder: newReminder)
-            
+          newReminder.remindOnEntry = true
+          newReminder.remindOnExit = false
+          newReminder.text = "What's going on?"
+          
+          let location = ReminderLocation(context: managedContext)
+               location.latitude = 12.12
+               location.longitude = 89.89
+               location.name = "Lala"
+               newReminder.location = location
+          print("remindOnEntry: \(newReminder.remindOnEntry)")
+          print("remindOnExit: \(newReminder.remindOnExit)")
+          print("text: \(newReminder.text)")
+          print("latitude: \(newReminder.location?.latitude)")
+          print("longitude: \(newReminder.location?.longitude)")
+          print("location: \(newReminder.location?.name)")
             do {
                 try managedContext.save()
             } catch {
                 print("Failed to save")
+               print(error)
             }
             return
         }
-        
+     
         getEntry(reminder: selection)
-        
+     
         do {
             try managedContext.save()
         } catch {
@@ -117,8 +141,9 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
             break
         }
     }
-    
+     
     func getLocation(for pin: MKAnnotation) {
+          currentAnnotation = pin
         mapView.addAnnotation(pin)
         print("map annotation function called")
     }
