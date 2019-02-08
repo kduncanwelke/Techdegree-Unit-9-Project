@@ -12,7 +12,7 @@ import CoreData
 class MasterViewController: UITableViewController, UISplitViewControllerDelegate {
 
     var detailViewController: DetailViewController? = nil
-    var reminders: [Reminder] = []
+    var reminders: [ReminderList] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +44,7 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
      
      func loadReminders() {
           let managedContext = CoreDataManager.shared.managedObjectContext
-          let fetchRequest = NSFetchRequest<Reminder>(entityName: "Reminder")
+          let fetchRequest = NSFetchRequest<ReminderList>(entityName: "ReminderList")
           
           do {
                reminders = try managedContext.fetch(fetchRequest)
@@ -110,7 +110,7 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
           let managedContext = CoreDataManager.shared.managedObjectContext
-          managedContext.delete(reminders[indexPath.row] as Reminder)
+          managedContext.delete(reminders[indexPath.row] as ReminderList)
           
           do {
                try managedContext.save()

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="18C54" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="ReminderList" representedClassName="ReminderList" syncable="YES" codeGenerationType="class">
+        <attribute name="remindOnEntry" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="remindOnExit" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="text" attributeType="String" syncable="YES"/>
+        <relationship name="reminderLocation" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ReminderLocale" inverseName="mainReminder" inverseEntity="ReminderLocale" syncable="YES"/>
+    </entity>
+    <entity name="ReminderLocale" representedClassName="ReminderLocale" syncable="YES" codeGenerationType="class">
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <relationship name="mainReminder" maxCount="1" deletionRule="Nullify" destinationEntity="ReminderList" inverseName="reminderLocation" inverseEntity="ReminderList" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="ReminderList" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="ReminderLocale" positionX="-54" positionY="18" width="128" height="105"/>
+    </elements>
+</model>

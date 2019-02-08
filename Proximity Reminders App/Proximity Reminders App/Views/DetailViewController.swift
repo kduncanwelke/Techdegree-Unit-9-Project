@@ -18,9 +18,10 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
     @IBOutlet weak var searchContainer: UIView!
     @IBOutlet weak var mapView: MKMapView!
     
-    var detailItem: Reminder?
+    var detailItem: ReminderList?
     let locationManager = CLLocationManager()
     var searchController = UISearchController(searchResultsController: nil)
+    var selectedPin: MKPlacemark?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,7 +75,15 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         } else {
             return
         }
-        
+     
+     guard let location = detailItem?.reminderLocation else { return }
+          let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+          print("we made a coordinate")
+          let annotation = MKPointAnnotation()
+          annotation.coordinate = coordinate
+          annotation.title = location.name
+     
+          mapView.addAnnotation(annotation)
     }
     
     func saveEntry() {
@@ -82,9 +91,14 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         
         // save new entry if no item was selected from previous view
         guard let selection = detailItem else {
-            let newReminder = Reminder(context: managedContext)
-            
-            getEntry(reminder: newReminder)
+          let newReminder = ReminderList(context: managedContext)
+          
+          let location = ReminderLocale(context: managedContext)
+          
+          getSelectedLocation(location: location)
+          
+          newReminder.reminderLocation = location
+          getEntry(reminder: newReminder)
             
             do {
                 try managedContext.save()
@@ -93,9 +107,19 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
             }
             return
         }
-        
-        getEntry(reminder: selection)
-        
+     
+     guard let location = selection.reminderLocation else {
+          // location was not set before but one is being added
+          
+          let location = ReminderLocale(context: managedContext)
+          getSelectedLocation(location: location)
+          selection.reminderLocation = location
+          return
+     }
+          getSelectedLocation(location: location)
+          selection.reminderLocation = location
+          getEntry(reminder: selection)
+     
         do {
             try managedContext.save()
         } catch {
@@ -103,7 +127,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         }
     }
     
-    func getEntry(reminder: Reminder) {
+    func getEntry(reminder: ReminderList) {
         reminder.text = reminderTextField.text
         
         switch notificationTime.selectedSegmentIndex {
@@ -114,13 +138,27 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
             reminder.remindOnEntry = false
             reminder.remindOnExit = true
         default:
-            break
+          reminder.remindOnEntry = false
+          reminder.remindOnExit = false
         }
     }
+     
+     func getSelectedLocation(location: ReminderLocale) {
+          guard let selectedLocation = selectedPin else { return }
+          location.latitude = selectedLocation.coordinate.latitude
+          location.longitude = selectedLocation.coordinate.longitude
+          location.name = selectedLocation.title
+     }
     
-    func getLocation(for pin: MKAnnotation) {
-        mapView.addAnnotation(pin)
-        print("map annotation function called")
+     func getLocation(for pin: MKPlacemark) {
+          selectedPin = pin
+          mapView.removeAnnotations(mapView.annotations)
+     
+          let annotation = MKPointAnnotation()
+          annotation.coordinate = pin.coordinate
+          annotation.title = pin.name
+          
+          mapView.addAnnotation(annotation)
     }
     
     @IBAction func saveTapped(_ sender: Any) {
@@ -140,7 +178,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 extension DetailViewController {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
-            print("\(lat) \(long)")
+          print("current location: \(lat) \(long)")
             let regionRadius: CLLocationDistance = 1000
            
             let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)

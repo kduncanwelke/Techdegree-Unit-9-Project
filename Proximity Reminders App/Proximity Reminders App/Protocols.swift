@@ -10,5 +10,5 @@ import Foundation
 import MapKit
 
 protocol MapPinDelegate {
-    func getLocation(for: MKAnnotation)
+    func getLocation(for: MKPlacemark)
 }
