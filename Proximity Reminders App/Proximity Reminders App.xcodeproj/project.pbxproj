@@ -24,7 +24,7 @@
 		2D782E9C2203AA3E0073320F /* Proximity Reminders App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Proximity Reminders App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D782E9F2203AA3E0073320F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2D782EA12203AA3E0073320F /* MasterViewController.swift */ = {isa = PBXFileReference; indentWidth = 5; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
-		2D782EA32203AA3E0073320F /* DetailViewController.swift */ = {isa = PBXFileReference; indentWidth = 5; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
+		2D782EA32203AA3E0073320F /* DetailViewController.swift */ = {isa = PBXFileReference; indentWidth = 5; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		2D782EA62203AA3E0073320F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2D782EA82203AA400073320F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2D782EAB2203AA400073320F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -72,9 +72,9 @@
 				2D782EA52203AA3E0073320F /* Main.storyboard */,
 				2D782EA82203AA400073320F /* Assets.xcassets */,
 				2D782EAA2203AA400073320F /* LaunchScreen.storyboard */,
-				2D93F87E220E08F9004B4B3C /* ReminderList.xcdatamodeld */,
 				2DBE5497220B56C700CDF46B /* Protocols.swift */,
 				2D8671362204EF31007142F2 /* Extensions.swift */,
+				2D93F87E220E08F9004B4B3C /* ReminderList.xcdatamodeld */,
 				2D782EAD2203AA400073320F /* Info.plist */,
 			);
 			path = "Proximity Reminders App";

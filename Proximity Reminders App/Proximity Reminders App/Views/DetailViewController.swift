@@ -11,11 +11,10 @@ import CoreData
 import CoreLocation
 import MapKit
 
-class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UISearchBarDelegate, MapPinDelegate {
+class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UISearchBarDelegate, MapPinDelegate, MKMapViewDelegate {
     
     @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var notificationTime: UISegmentedControl!
-    @IBOutlet weak var searchContainer: UIView!
     @IBOutlet weak var mapView: MKMapView!
     
     var detailItem: ReminderList?
@@ -38,7 +37,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         
         resultsTableController.tableView.delegate = resultsTableController
         resultsTableController.mapView = mapView
-        
+		
         // set delegate for map pin
         resultsTableController.delegate = self
         
@@ -50,6 +49,8 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         searchController.delegate = self
         searchController.dimsBackgroundDuringPresentation = false // The default is true.
         searchController.searchBar.delegate = self // Monitor when the search button is tapped.
+		
+		mapView.delegate = self
     }
     
     // assign searchController as navigationItem here, otherwise split view won't display it
@@ -78,12 +79,18 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
      
      guard let location = detailItem?.reminderLocation else { return }
           let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
-          print("we made a coordinate")
           let annotation = MKPointAnnotation()
           annotation.coordinate = coordinate
           annotation.title = location.name
+		
+		let circle = MKCircle(center: annotation.coordinate, radius: 50)
+		mapView.addOverlay(circle)
      
           mapView.addAnnotation(annotation)
+     
+     let regionRadius: CLLocationDistance = 500
+     let region = MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
+     mapView.setRegion(region, animated: true)
     }
     
     func saveEntry() {
@@ -147,45 +154,70 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
           guard let selectedLocation = selectedPin else { return }
           location.latitude = selectedLocation.coordinate.latitude
           location.longitude = selectedLocation.coordinate.longitude
-          location.name = selectedLocation.title
+          location.name = selectedLocation.name
      }
     
      func getLocation(for pin: MKPlacemark) {
           selectedPin = pin
           mapView.removeAnnotations(mapView.annotations)
-     
+		
           let annotation = MKPointAnnotation()
           annotation.coordinate = pin.coordinate
           annotation.title = pin.name
-          
-          mapView.addAnnotation(annotation)
+		
+		let regionRadius: CLLocationDistance = 500
+		
+		let region = MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
+			mapView.setRegion(region, animated: true)
+			let circle = MKCircle(center: annotation.coordinate, radius: 50)
+		
+			mapView.addAnnotation(annotation)
+			mapView.addOverlay(circle)
     }
+
+	
+	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+		let circleRenderer = MKCircleRenderer(circle: overlay as! MKCircle)
+			circleRenderer.fillColor = UIColor.blue.withAlphaComponent(0.5)
+			circleRenderer.strokeColor = UIColor.white
+			circleRenderer.lineWidth = 1.0
+			return circleRenderer
+	}
     
     @IBAction func saveTapped(_ sender: Any) {
-        saveEntry()
-        if let masterViewController = splitViewController?.primaryViewController {
-            masterViewController.loadReminders()
-        }
-        
-        if let navController = splitViewController?.viewControllers[0] as? UINavigationController {
-            navController.popViewController(animated: true)
-        }
-    }
+		if reminderTextField.text == "" {
+			showAlert(title: "Missing information", message: "Please enter some text for your reminder")
+		} else {
+			 saveEntry()
+			 if let masterViewController = splitViewController?.primaryViewController {
+				 masterViewController.loadReminders()
+			 }
+			
+			 if let navController = splitViewController?.viewControllers[0] as? UINavigationController {
+				 navController.popViewController(animated: true)
+			 }
+		 }
+	}
 }
 
 
 // add location functionality
 extension DetailViewController {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
-          print("current location: \(lat) \(long)")
-            let regionRadius: CLLocationDistance = 1000
-           
-            let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
-            mapView.setRegion(region, animated: true)
-        } else {
-            print("no coordinates found")
-        }
+		// if no item and associated location are being shown, display current location
+		if detailItem == nil {
+			 if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
+			   print("current location: \(lat) \(long)")
+				 let regionRadius: CLLocationDistance = 1000
+				
+				 let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
+				 mapView.setRegion(region, animated: true)
+			 } else {
+				 print("no coordinates found")
+			 }
+		} else {
+			return // if
+		}
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

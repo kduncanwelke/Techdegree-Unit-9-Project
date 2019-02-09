@@ -15,3 +15,12 @@ extension UISplitViewController {
         return navController?.topViewController as? MasterViewController
     }
 }
+
+// add reusable alert functionality
+extension UIViewController {
+	func showAlert(title: String, message: String) {
+		let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+		alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+		self.present(alert, animated: true, completion: nil)
+	}
+}
