@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D759E82220F91DB00DBBB76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D759E81220F91DB00DBBB76 /* LocationManager.swift */; };
 		2D782EA02203AA3E0073320F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D782E9F2203AA3E0073320F /* AppDelegate.swift */; };
 		2D782EA22203AA3E0073320F /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D782EA12203AA3E0073320F /* MasterViewController.swift */; };
 		2D782EA42203AA3E0073320F /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D782EA32203AA3E0073320F /* DetailViewController.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2D759E81220F91DB00DBBB76 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2D782E9C2203AA3E0073320F /* Proximity Reminders App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Proximity Reminders App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D782E9F2203AA3E0073320F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2D782EA12203AA3E0073320F /* MasterViewController.swift */ = {isa = PBXFileReference; indentWidth = 5; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				2D8671332204C00B007142F2 /* CoreDataManager.swift */,
+				2D759E81220F91DB00DBBB76 /* LocationManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -177,6 +180,7 @@
 				2D782EA02203AA3E0073320F /* AppDelegate.swift in Sources */,
 				2D8671342204C00B007142F2 /* CoreDataManager.swift in Sources */,
 				2DBE5498220B56C700CDF46B /* Protocols.swift in Sources */,
+				2D759E82220F91DB00DBBB76 /* LocationManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

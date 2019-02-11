@@ -109,15 +109,21 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+			let toDelete = reminders[indexPath.row] as ReminderList
+			guard let latitude = toDelete.reminderLocation?.latitude, let longitude = toDelete.reminderLocation?.longitude, let title = toDelete.text else { return }
+			
+			LocationManager.stopMonitoringRegion(latitude: latitude, longitude: longitude, title: title)
+			print("stopped monitoring")
+			
           let managedContext = CoreDataManager.shared.managedObjectContext
-          managedContext.delete(reminders[indexPath.row] as ReminderList)
+          managedContext.delete(toDelete)
           
           do {
                try managedContext.save()
           } catch {
                print("Failed to save")
           }
-          
+			
             reminders.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {

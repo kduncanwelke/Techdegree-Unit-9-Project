@@ -7,12 +7,15 @@
 //
 
 import UIKit
+import CoreLocation
+import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
-
+	var locationManager: CLLocationManager?
+	var notificationCenter: UNUserNotificationCenter?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -20,6 +23,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
         splitViewController.delegate = self
+		
+		self.locationManager = CLLocationManager()
+		self.locationManager?.delegate = self
+		
+		self.notificationCenter = UNUserNotificationCenter.current()
+		notificationCenter?.delegate = self
+		
+		let options: UNAuthorizationOptions = [.alert, .sound]
+		
+		notificationCenter?.requestAuthorization(options: options) { (granted, error) in
+			if !granted {
+				print("Permission not granted")
+			}
+		}
         return true
     }
 
@@ -68,5 +85,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         return false
     }
 
+}
+
+extension AppDelegate: CLLocationManagerDelegate {
+	func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+		if region is CLCircularRegion {
+			LocationManager.handleEvent(for: region)
+		}
+	}
+	
+	func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+		if region is CLCircularRegion {
+			LocationManager.handleEvent(for: region)
+		}
+	}
+	
+	func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+		completionHandler(.alert)
+	}
+	
+	func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+		let identifier = response.notification.request.identifier
+	}
 }
 

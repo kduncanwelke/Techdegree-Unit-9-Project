@@ -173,6 +173,25 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 		
 			mapView.addAnnotation(annotation)
 			mapView.addOverlay(circle)
+		
+		var remindOnEntry = false
+		var remindOnExit = false
+		
+		switch notificationTime.selectedSegmentIndex {
+		case 0:
+			remindOnEntry = true
+			remindOnExit = false
+		case 1:
+			remindOnEntry = false
+			remindOnExit = true
+		default:
+			remindOnEntry = false
+			remindOnExit = false
+		}
+		
+		let geofenceArea = LocationManager.getMonitoringRegion(for: annotation, notifyOnEntry: remindOnEntry, notifyOnExit: remindOnExit)
+		locationManager.startMonitoring(for: geofenceArea)
+		print("started monitoring")
     }
 
 	
