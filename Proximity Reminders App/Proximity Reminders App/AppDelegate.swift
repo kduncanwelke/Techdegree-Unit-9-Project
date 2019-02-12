@@ -14,7 +14,7 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
-	var locationManager: CLLocationManager?
+	let locationManager = CLLocationManager()
 	var notificationCenter: UNUserNotificationCenter?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -24,8 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
         splitViewController.delegate = self
 		
-		self.locationManager = CLLocationManager()
-		self.locationManager?.delegate = self
+		locationManager.delegate = self
+		locationManager.requestAlwaysAuthorization()
 		
 		self.notificationCenter = UNUserNotificationCenter.current()
 		notificationCenter?.delegate = self
@@ -95,7 +95,9 @@ extension AppDelegate: CLLocationManagerDelegate {
 	}
 	
 	func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+		print("function called")
 		if region is CLCircularRegion {
+			print("entered region")
 			LocationManager.handleEvent(for: region)
 		}
 	}
@@ -106,6 +108,14 @@ extension AppDelegate: CLLocationManagerDelegate {
 	
 	func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
 		let identifier = response.notification.request.identifier
+	}
+	
+	func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+		print("Monitoring failed for region \(String(describing: region))")
+	}
+	
+	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+		print("Location monitoring failed with error \(error)")
 	}
 }
 

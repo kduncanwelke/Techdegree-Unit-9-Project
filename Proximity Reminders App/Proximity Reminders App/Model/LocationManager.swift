@@ -29,12 +29,13 @@ struct LocationManager {
 	}
 	
 	static func handleEvent(for region: CLRegion) {
+		print("event handled")
 		let notificationContent = UNMutableNotificationContent()
 		notificationContent.title = "Notification title"
 		notificationContent.body = "Here is the message"
 		notificationContent.sound = UNNotificationSound.default
 		
-		let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+		let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
 		let identifier = region.identifier
 		
 		let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)

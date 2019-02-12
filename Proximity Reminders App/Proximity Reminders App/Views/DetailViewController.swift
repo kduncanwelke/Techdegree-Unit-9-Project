@@ -191,6 +191,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 		
 		let geofenceArea = LocationManager.getMonitoringRegion(for: annotation, notifyOnEntry: remindOnEntry, notifyOnExit: remindOnExit)
 		locationManager.startMonitoring(for: geofenceArea)
+		print("\(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
 		print("started monitoring")
     }
 
