@@ -99,11 +99,11 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         // save new entry if no item was selected from previous view
         guard let selection = detailItem else {
           let newReminder = ReminderList(context: managedContext)
-          
-          let location = ReminderLocale(context: managedContext)
+			
+			var location: ReminderLocale?
+           location = ReminderLocale(context: managedContext)
           
           getSelectedLocation(location: location)
-          
           newReminder.reminderLocation = location
           getEntry(reminder: newReminder)
             
@@ -117,8 +117,8 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
      
      guard let location = selection.reminderLocation else {
           // location was not set before but one is being added
-          
-          let location = ReminderLocale(context: managedContext)
+          var location: ReminderLocale?
+          location = ReminderLocale(context: managedContext)
           getSelectedLocation(location: location)
           selection.reminderLocation = location
           return
@@ -150,8 +150,8 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         }
     }
      
-     func getSelectedLocation(location: ReminderLocale) {
-          guard let selectedLocation = selectedPin else { return }
+     func getSelectedLocation(location: ReminderLocale?) {
+          guard let selectedLocation = selectedPin, let location = location else { return }
           location.latitude = selectedLocation.coordinate.latitude
           location.longitude = selectedLocation.coordinate.longitude
           location.name = selectedLocation.name
