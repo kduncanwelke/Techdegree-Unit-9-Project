@@ -15,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     var window: UIWindow?
 	let locationManager = CLLocationManager()
-	var notificationCenter: UNUserNotificationCenter?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -26,15 +25,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 		
 		locationManager.delegate = self
 		locationManager.requestAlwaysAuthorization()
+		locationManager.requestLocation()
 		
-		self.notificationCenter = UNUserNotificationCenter.current()
-		notificationCenter?.delegate = self
+		let notificationCenter = UNUserNotificationCenter.current()
+		notificationCenter.delegate = self
 		
-		let options: UNAuthorizationOptions = [.alert, .sound]
+		let options: UNAuthorizationOptions = [.alert, .sound, .badge]
 		
-		notificationCenter?.requestAuthorization(options: options) { (granted, error) in
-			if !granted {
-				print("Permission not granted")
+		notificationCenter.requestAuthorization(options: options) { (granted, error) in
+			if let error = error {
+				print("Error found: \(error)")
+			} else {
+				DispatchQueue.main.async {
+					application.registerForRemoteNotifications()
+				}
 			}
 		}
         return true
@@ -102,12 +106,21 @@ extension AppDelegate: CLLocationManagerDelegate {
 		}
 	}
 	
+	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+		print("Notifications successfully registered for")
+	}
+	
+	func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+		print("Failed to register for notifications")
+	}
+	
 	func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-		completionHandler(.alert)
+		completionHandler([.alert, .badge, .sound])
 	}
 	
 	func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-		let identifier = response.notification.request.identifier
+		completionHandler()
+		//let identifier = response.notification.request.identifier
 	}
 	
 	func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
@@ -116,6 +129,10 @@ extension AppDelegate: CLLocationManagerDelegate {
 	
 	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
 		print("Location monitoring failed with error \(error)")
+	}
+	
+	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+		print("Location updated")
 	}
 }
 

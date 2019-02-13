@@ -55,5 +55,9 @@
 	<string>Proximity Reminders requires constant location access in order to provide location-based reminders</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Proximity Reminders requires constant location access in order to provide location-based reminders</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Proximity Reminders requires constant location access in order to provide location-based reminders</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Proximity Reminders requires constant location access in order to provide location-based reminders</string>
 </dict>
 </plist>

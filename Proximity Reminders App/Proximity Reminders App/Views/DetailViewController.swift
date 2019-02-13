@@ -31,6 +31,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         locationManager.requestAlwaysAuthorization()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestLocation()
+		locationManager.startUpdatingLocation()
         
         // set up search bar
         let resultsTableController = LocationSearchTable()
@@ -117,12 +118,12 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
      
      guard let location = selection.reminderLocation else {
           // location was not set before but one is being added
-          var location: ReminderLocale?
-          location = ReminderLocale(context: managedContext)
+          let location = ReminderLocale(context: managedContext)
           getSelectedLocation(location: location)
           selection.reminderLocation = location
           return
      }
+		
           getSelectedLocation(location: location)
           selection.reminderLocation = location
           getEntry(reminder: selection)
@@ -173,26 +174,6 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 		
 			mapView.addAnnotation(annotation)
 			mapView.addOverlay(circle)
-		
-		var remindOnEntry = false
-		var remindOnExit = false
-		
-		switch notificationTime.selectedSegmentIndex {
-		case 0:
-			remindOnEntry = true
-			remindOnExit = false
-		case 1:
-			remindOnEntry = false
-			remindOnExit = true
-		default:
-			remindOnEntry = false
-			remindOnExit = false
-		}
-		
-		let geofenceArea = LocationManager.getMonitoringRegion(for: annotation, notifyOnEntry: remindOnEntry, notifyOnExit: remindOnExit)
-		locationManager.startMonitoring(for: geofenceArea)
-		print("\(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
-		print("started monitoring")
     }
 
 	
@@ -208,6 +189,31 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 		if reminderTextField.text == "" {
 			showAlert(title: "Missing information", message: "Please enter some text for your reminder")
 		} else {
+			// start monitoring location if one was added
+			guard let pin = selectedPin else { return }
+			let annotation = MKPointAnnotation()
+			annotation.coordinate = pin.coordinate
+			
+			var remindOnEntry = false
+			var remindOnExit = false
+			
+			switch notificationTime.selectedSegmentIndex {
+			case 0:
+				remindOnEntry = true
+				remindOnExit = false
+			case 1:
+				remindOnEntry = false
+				remindOnExit = true
+			default:
+				remindOnEntry = false
+				remindOnExit = false
+			}
+			
+			let geofenceArea = LocationManager.getMonitoringRegion(for: annotation, notifyOnEntry: remindOnEntry, notifyOnExit: remindOnExit)
+			locationManager.startMonitoring(for: geofenceArea)
+			print("\(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
+			print("started monitoring")
+			
 			 saveEntry()
 			 if let masterViewController = splitViewController?.primaryViewController {
 				 masterViewController.loadReminders()
@@ -236,7 +242,7 @@ extension DetailViewController {
 				 print("no coordinates found")
 			 }
 		} else {
-			return // if
+			return
 		}
     }
     
@@ -269,4 +275,5 @@ extension DetailViewController {
     
     func updateSearchResults(for searchController: UISearchController) {
     }
+	
 }
