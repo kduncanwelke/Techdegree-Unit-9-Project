@@ -52,6 +52,17 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         searchController.searchBar.delegate = self // Monitor when the search button is tapped.
 		
 		mapView.delegate = self
+		
+		if CLLocationManager.locationServicesEnabled() {
+			switch CLLocationManager.authorizationStatus() {
+			case .notDetermined, .restricted, .denied:
+				showAlert(title: "Notice", message: "Access to location services has not been granted. This may result in undesired behavior.")
+			case .authorizedAlways, .authorizedWhenInUse:
+				print("Access")
+			}
+		} else {
+			showAlert(title: "Notice", message: "Location service is not available - all features of this app may not be available.")
+		}
     }
     
     // assign searchController as navigationItem here, otherwise split view won't display it

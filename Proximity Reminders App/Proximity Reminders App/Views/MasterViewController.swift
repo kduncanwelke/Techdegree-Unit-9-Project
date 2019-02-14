@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 class MasterViewController: UITableViewController, UISplitViewControllerDelegate {
 

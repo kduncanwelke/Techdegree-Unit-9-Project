@@ -30,17 +30,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 		let notificationCenter = UNUserNotificationCenter.current()
 		notificationCenter.delegate = self
 		
-		let options: UNAuthorizationOptions = [.alert, .sound, .badge]
-		
-		notificationCenter.requestAuthorization(options: options) { (granted, error) in
+		notificationCenter.requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, error in
 			if let error = error {
 				print("Error found: \(error)")
-			} else {
-				DispatchQueue.main.async {
-					application.registerForRemoteNotifications()
-				}
 			}
-		}
+		})
+		
         return true
     }
 

@@ -19,6 +19,7 @@
 		2D8671392205032F007142F2 /* LocationSearchTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8671382205032F007142F2 /* LocationSearchTable.swift */; };
 		2D93F880220E08F9004B4B3C /* ReminderList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2D93F87E220E08F9004B4B3C /* ReminderList.xcdatamodeld */; };
 		2DBE5498220B56C700CDF46B /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBE5497220B56C700CDF46B /* Protocols.swift */; };
+		2DE9C88C2214DF10001E2074 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DE9C88B2214DF10001E2074 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		2D8671382205032F007142F2 /* LocationSearchTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTable.swift; sourceTree = "<group>"; };
 		2D93F87F220E08F9004B4B3C /* ReminderList.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ReminderList.xcdatamodel; sourceTree = "<group>"; };
 		2DBE5497220B56C700CDF46B /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Protocols.swift; path = "Proximity Reminders App/Protocols.swift"; sourceTree = SOURCE_ROOT; };
+		2DE9C88B2214DF10001E2074 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DE9C88C2214DF10001E2074 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,6 +57,7 @@
 			children = (
 				2D782E9E2203AA3E0073320F /* Proximity Reminders App */,
 				2D782E9D2203AA3E0073320F /* Products */,
+				2DE9C88A2214DF10001E2074 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,6 +105,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		2DE9C88A2214DF10001E2074 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2DE9C88B2214DF10001E2074 /* MapKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -133,6 +145,11 @@
 				TargetAttributes = {
 					2D782E9B2203AA3E0073320F = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};

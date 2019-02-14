@@ -10,6 +10,7 @@ import Foundation
 import MapKit
 import UIKit
 import UserNotifications
+import CoreData
 
 struct LocationManager {
 	static func getMonitoringRegion(for location: MKPointAnnotation, notifyOnEntry: Bool, notifyOnExit: Bool) -> CLCircularRegion {
@@ -30,13 +31,30 @@ struct LocationManager {
 	
 	static func handleEvent(for region: CLRegion) {
 		print("event handled")
-		let notificationContent = UNMutableNotificationContent()
-		notificationContent.title = "Notification title"
-		notificationContent.body = "Here is the message"
-		notificationContent.sound = UNNotificationSound.default
 		
 		let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
 		let identifier = region.identifier
+		
+		let text = identifier
+		let managedContext = CoreDataManager.shared.managedObjectContext
+		let fetchRequest = NSFetchRequest<ReminderList>(entityName: "ReminderList")
+		fetchRequest.predicate = NSPredicate(format: "text == %@", text)
+		
+		var reminder: ReminderList?
+		do {
+			reminder = try managedContext.fetch(fetchRequest).first
+		} catch let error as NSError {
+			print("could not fetch, \(error), \(error.userInfo)")
+		}
+		
+		guard let notificationReminder = reminder else { return }
+		
+		let notificationContent = UNMutableNotificationContent()
+		notificationContent.title = "Reminder Activated"
+		notificationContent.body = "\(String(describing: notificationReminder.text))"
+		notificationContent.sound = UNNotificationSound.default
+		
+		print(notificationReminder.text)
 		
 		let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
 		
