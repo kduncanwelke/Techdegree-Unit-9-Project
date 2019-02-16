@@ -9,6 +9,8 @@
 import Foundation
 import MapKit
 
+// protocol to handle passing map pin via delegate
 protocol MapPinDelegate {
     func getLocation(for: MKPlacemark)
 }
+

@@ -9,11 +9,13 @@
 import UIKit
 import CoreData
 import UserNotifications
+import CoreLocation
 
 class MasterViewController: UITableViewController, UISplitViewControllerDelegate {
 
     var detailViewController: DetailViewController? = nil
     var reminders: [ReminderList] = []
+	let locationManager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +28,8 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
         if let split = splitViewController {
             let controllers = split.viewControllers
             detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-          
+			
+		  // handle split view behavior
           if split.displayMode == .primaryHidden {
                split.preferredDisplayMode = .allVisible
                // prevent collapsing to detail
@@ -61,14 +64,20 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
         //objects.insert(NSDate(), at: 0)
         //let indexPath = IndexPath(row: 0, section: 0)
         //tableView.insertRows(at: [indexPath], with: .automatic)
-     
+		
+		if locationManager.monitoredRegions.count == 20 {
+			showAlert(title: "Notice", message: "Maximum 20 locations are already been monitored. Further reminders with location monitoring cannot be added.")
+		}
+		
+	 // segue to detail view if in collapsed view, otherwise not
      if let split = splitViewController {
           if split.isCollapsed {
                performSegue(withIdentifier: "showDetail", sender: Any?.self)
           } else {
-               //something
+			return
+               // do nothing different
           }
-     }
+     	}
     }
 
     // MARK: - Segues
@@ -110,12 +119,15 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-			let toDelete = reminders[indexPath.row] as ReminderList
-			guard let latitude = toDelete.reminderLocation?.latitude, let longitude = toDelete.reminderLocation?.longitude, let title = toDelete.text else { return }
+		  let toDelete = reminders[indexPath.row] as ReminderList
+		  guard let latitude = toDelete.reminderLocation?.latitude, let longitude = toDelete.reminderLocation?.longitude, let address = toDelete.reminderLocation?.address else { return }
 			
-			LocationManager.stopMonitoringRegion(latitude: latitude, longitude: longitude, title: title)
-			print("stopped monitoring")
+		  // stop monitoring location for deleted item
+		  LocationManager.stopMonitoringRegion(latitude: latitude, longitude: longitude, address: address)
 			
+		  print("stopped monitoring")
+			
+		  // save core data
           let managedContext = CoreDataManager.shared.managedObjectContext
           managedContext.delete(toDelete)
           
@@ -125,8 +137,9 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
                print("Failed to save")
           }
 			
-            reminders.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+		  // lastly remove item from table
+		  reminders.remove(at: indexPath.row)
+		  tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
