@@ -105,11 +105,28 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ReminderTableViewCell
+		let backgroundView = UIView()
+		backgroundView.backgroundColor = UIColor(red:0.01, green:0.45, blue:0.95, alpha:1.0)
+		cell.selectedBackgroundView = backgroundView
+		
         let object = reminders[indexPath.row]
-		//cell.textLabel!.textColor = UIColor.white
-        cell.textLabel!.text = object.text
+        cell.reminderTextLabel.text = object.text
+		
+		if object.remindOnEntry == true {
+			cell.remindMeTextLabel.text = "On entering"
+			cell.locationTextLabel.text = object.reminderLocation?.address
+			cell.pinLabel.isHidden = false
+		} else if object.remindOnExit == true {
+			cell.remindMeTextLabel.text = "On exiting"
+			cell.locationTextLabel.text = object.reminderLocation?.address
+			cell.pinLabel.isHidden = false
+	   	} else {
+		   cell.remindMeTextLabel.text = "No location"
+		   cell.pinLabel.isHidden = true
+		   cell.locationTextLabel.text = ""
+	   	}
+		
         return cell
     }
 

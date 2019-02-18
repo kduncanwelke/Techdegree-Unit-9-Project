@@ -22,6 +22,7 @@ class LocationSearchTable: UITableViewController {
         self.tableView.dataSource = self
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "searchCell")
+		tableView.backgroundColor = UIColor(red:0.08, green:0.10, blue:0.24, alpha:1.0)
     }
 }
 
@@ -55,11 +56,12 @@ extension LocationSearchTable {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell  {
         var cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath)
         cell = UITableViewCell.init(style: .subtitle, reuseIdentifier: "searchCell")
-        
+		cell.backgroundColor = UIColor(red:0.08, green:0.10, blue:0.24, alpha:1.0)
+		
         let selectedItem = resultsList[indexPath.row].placemark
         cell.textLabel?.text = selectedItem.name
-		//cell.textLabel!.textColor = UIColor.white
-		//cell.detailTextLabel!.textColor = UIColor.white
+		cell.textLabel!.textColor = UIColor.white
+		cell.detailTextLabel!.textColor = UIColor.lightGray
         cell.detailTextLabel?.text = LocationManager.parseAddress(selectedItem: selectedItem)
         return cell
     }

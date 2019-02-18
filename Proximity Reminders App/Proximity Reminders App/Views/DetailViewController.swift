@@ -213,42 +213,43 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 			showAlert(title: "Missing information", message: "Please enter some text for your reminder")
 		} else {
 			// start monitoring location if one was added
-			guard let pin = selectedPin else { return }
-			let annotation = MKPointAnnotation()
-			annotation.coordinate = pin.coordinate
-			
-			var remindOnEntry = false
-			var remindOnExit = false
-			
-			switch notificationTime.selectedSegmentIndex {
-			case 0:
-				remindOnEntry = true
-				remindOnExit = false
-			case 1:
-				remindOnEntry = false
-				remindOnExit = true
-			default:
-				remindOnEntry = false
-				remindOnExit = false
+			if let pin = selectedPin {
+				 let annotation = MKPointAnnotation()
+				 annotation.coordinate = pin.coordinate
+				
+				 var remindOnEntry = false
+				 var remindOnExit = false
+				
+				 switch notificationTime.selectedSegmentIndex {
+				 case 0:
+					 remindOnEntry = true
+					 remindOnExit = false
+				 case 1:
+					 remindOnEntry = false
+					 remindOnExit = true
+				 default:
+					 remindOnEntry = false
+					 remindOnExit = false
+				 }
+				
+				 guard let address = pinAddress else { return }
+				
+				 let geofenceArea = LocationManager.getMonitoringRegion(for: annotation, address: address, notifyOnEntry: remindOnEntry, notifyOnExit: remindOnExit)
+				
+				 if locationManager.monitoredRegions.contains(geofenceArea) {
+					 showAlert(title: "Pre-existing Geofence", message: "The area you have selected is already being monitored - please select a different region.")
+					 print("area already in use")
+				 } else {
+					
+				 locationManager.startMonitoring(for: geofenceArea)
+				 print("\(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
+				 print("started monitoring")
+					}
 			}
-			
-			guard let address = pinAddress else { return }
-			
-			let geofenceArea = LocationManager.getMonitoringRegion(for: annotation, address: address, notifyOnEntry: remindOnEntry, notifyOnExit: remindOnExit)
-			
-			if locationManager.monitoredRegions.contains(geofenceArea) {
-				showAlert(title: "Pre-existing Geofence", message: "The area you have selected is already being monitored - please select a different region.")
-				print("area already in use")
-			} else {
-			
-			locationManager.startMonitoring(for: geofenceArea)
-			print("\(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
-			print("started monitoring")
 			
 			// save entry and either pop back to view or reload table data depending on split view display
 			 saveEntry()
 			
-			LocationManager.handleEvent(for: geofenceArea)
 			 if let masterViewController = splitViewController?.primaryViewController {
 				 masterViewController.loadReminders()
 			 }
@@ -257,7 +258,6 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 				 navController.popViewController(animated: true)
 			 }
 		 }
-		}
 	}
 }
 
@@ -265,12 +265,12 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 // add location functionality
 extension DetailViewController {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		// if a pin has been placed, don't recenter on current location
+		// if a pin has been placed, don't proceed to detect and recenter on current location
 		if selectedPin != nil {
 			return
 		} else {
-		// if no item and associated location are being shown, display current location
-		if detailItem == nil {
+		// if no item with an associated location is being shown, display current location
+		if detailItem?.reminderLocation?.address == nil {
 			 if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
 			   print("current location: \(lat) \(long)")
 				 let regionRadius: CLLocationDistance = 1000
@@ -316,4 +316,13 @@ extension DetailViewController {
     func updateSearchResults(for searchController: UISearchController) {
     }
 	
+	// limit text field characters to 50
+	func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+		let currentText = textField.text ?? ""
+		guard let stringRange = Range(range, in: currentText) else { return false }
+		
+		let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+		
+		return updatedText.count <= 50
+	}
 }
