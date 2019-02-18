@@ -74,11 +74,16 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
           if split.isCollapsed {
                performSegue(withIdentifier: "showDetail", sender: Any?.self)
           } else {
-			return
-               // do nothing different
-          }
-     	}
-    }
+			// reload detail view to prepare for new item
+			if let split = splitViewController {
+				let controllers = split.viewControllers
+				detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+				detailViewController?.detailItem = nil
+				detailViewController?.configureView()
+          	}
+     		}
+    	}
+	}
 
     // MARK: - Segues
 
@@ -138,12 +143,13 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
 		  let toDelete = reminders[indexPath.row] as ReminderList
-		  guard let latitude = toDelete.reminderLocation?.latitude, let longitude = toDelete.reminderLocation?.longitude, let address = toDelete.reminderLocation?.address else { return }
+			if let latitude = toDelete.reminderLocation?.latitude, let longitude = toDelete.reminderLocation?.longitude, let address = toDelete.reminderLocation?.address {
 			
-		  // stop monitoring location for deleted item
-		  LocationManager.stopMonitoringRegion(latitude: latitude, longitude: longitude, address: address)
-			
-		  print("stopped monitoring")
+			   // stop monitoring location for deleted item
+			   LocationManager.stopMonitoringRegion(latitude: latitude, longitude: longitude, address: address)
+				
+			   print("stopped monitoring")
+			}
 			
 		  // save core data
           let managedContext = CoreDataManager.shared.managedObjectContext

@@ -252,6 +252,8 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 			
 			 if let masterViewController = splitViewController?.primaryViewController {
 				 masterViewController.loadReminders()
+				detailItem = nil
+				self.configureView()
 			 }
 			
 			 if let navController = splitViewController?.viewControllers[0] as? UINavigationController {
