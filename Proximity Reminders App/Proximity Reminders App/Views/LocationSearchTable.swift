@@ -58,6 +58,8 @@ extension LocationSearchTable {
         
         let selectedItem = resultsList[indexPath.row].placemark
         cell.textLabel?.text = selectedItem.name
+		//cell.textLabel!.textColor = UIColor.white
+		//cell.detailTextLabel!.textColor = UIColor.white
         cell.detailTextLabel?.text = LocationManager.parseAddress(selectedItem: selectedItem)
         return cell
     }

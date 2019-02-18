@@ -108,6 +108,7 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
         let object = reminders[indexPath.row]
+		//cell.textLabel!.textColor = UIColor.white
         cell.textLabel!.text = object.text
         return cell
     }

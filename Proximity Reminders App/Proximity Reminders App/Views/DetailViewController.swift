@@ -121,7 +121,6 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
           getSelectedLocation(location: location)
           newReminder.reminderLocation = location
           getEntry(reminder: newReminder)
-            
             do {
                 try managedContext.save()
             } catch {
@@ -180,7 +179,7 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
      func getLocation(for pin: MKPlacemark) {
           selectedPin = pin
           mapView.removeAnnotations(mapView.annotations)
-		
+		  mapView.removeOverlays(mapView.overlays)
           let annotation = MKPointAnnotation()
           annotation.coordinate = pin.coordinate
           annotation.title = pin.name
@@ -190,11 +189,12 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 		let regionRadius: CLLocationDistance = 500
 		
 		let region = MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
-			let circle = MKCircle(center: annotation.coordinate, radius: 50)
-		
-			mapView.addAnnotation(annotation)
-			mapView.addOverlay(circle)
 		mapView.setRegion(region, animated: true)
+		
+		let circle = MKCircle(center: annotation.coordinate, radius: 50)
+		
+		mapView.addAnnotation(annotation)
+		mapView.addOverlay(circle)
     }
 
 	
@@ -265,6 +265,10 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 // add location functionality
 extension DetailViewController {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+		// if a pin has been placed, don't recenter on current location
+		if selectedPin != nil {
+			return
+		} else {
 		// if no item and associated location are being shown, display current location
 		if detailItem == nil {
 			 if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
@@ -280,6 +284,7 @@ extension DetailViewController {
 			return
 		}
     }
+	}
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error)

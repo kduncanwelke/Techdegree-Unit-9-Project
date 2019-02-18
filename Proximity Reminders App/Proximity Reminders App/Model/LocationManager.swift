@@ -36,7 +36,6 @@ struct LocationManager {
 	static func handleEvent(for region: CLRegion) {
 		print("event handled")
 		
-		//let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
 		let identifier = region.identifier
 		
 		let managedContext = CoreDataManager.shared.managedObjectContext
@@ -61,7 +60,7 @@ struct LocationManager {
 		notificationContent.body = reminderText ?? "You have entered a reminder-based region."
 		notificationContent.sound = UNNotificationSound.default
 		
-		let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+		let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
 
 		let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
 		
