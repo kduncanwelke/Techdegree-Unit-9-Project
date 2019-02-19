@@ -19,7 +19,6 @@ struct LocationManager {
 		let region = CLCircularRegion(center: coordinate, radius: 50.0, identifier: address)
 		region.notifyOnEntry = notifyOnEntry
 		region.notifyOnExit = notifyOnExit
-		print("identifier: \(address)")
 		return region
 	}
 	

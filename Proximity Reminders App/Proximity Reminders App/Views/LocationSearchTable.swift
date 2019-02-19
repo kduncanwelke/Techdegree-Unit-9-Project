@@ -24,6 +24,32 @@ class LocationSearchTable: UITableViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "searchCell")
 		tableView.backgroundColor = UIColor(red:0.08, green:0.10, blue:0.24, alpha:1.0)
     }
+	
+	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return resultsList.count
+	}
+	
+	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell  {
+		var cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath)
+		cell = UITableViewCell.init(style: .subtitle, reuseIdentifier: "searchCell")
+		cell.backgroundColor = UIColor(red:0.08, green:0.10, blue:0.24, alpha:1.0)
+		
+		let selectedItem = resultsList[indexPath.row].placemark
+		cell.textLabel?.text = selectedItem.name
+		cell.textLabel!.textColor = UIColor.white
+		cell.detailTextLabel!.textColor = UIColor.lightGray
+		cell.detailTextLabel?.text = LocationManager.parseAddress(selectedItem: selectedItem)
+		return cell
+	}
+	
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		let selectedLocation = resultsList[indexPath.row].placemark
+		
+		// pass selected location via delegate
+		delegate?.getLocation(for: selectedLocation)
+		
+		self.dismiss(animated: true, completion: nil)
+	}
 }
 
 // update results for search table
@@ -46,32 +72,4 @@ extension LocationSearchTable: UISearchResultsUpdating {
         }
     }
 
-}
-
-extension LocationSearchTable {
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return resultsList.count
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell  {
-        var cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath)
-        cell = UITableViewCell.init(style: .subtitle, reuseIdentifier: "searchCell")
-		cell.backgroundColor = UIColor(red:0.08, green:0.10, blue:0.24, alpha:1.0)
-		
-        let selectedItem = resultsList[indexPath.row].placemark
-        cell.textLabel?.text = selectedItem.name
-		cell.textLabel!.textColor = UIColor.white
-		cell.detailTextLabel!.textColor = UIColor.lightGray
-        cell.detailTextLabel?.text = LocationManager.parseAddress(selectedItem: selectedItem)
-        return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedLocation = resultsList[indexPath.row].placemark
-	
-		// pass selected location via delegate
-        delegate?.getLocation(for: selectedLocation)
-        
-        self.dismiss(animated: true, completion: nil)
-    }
 }

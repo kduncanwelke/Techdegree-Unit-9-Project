@@ -11,12 +11,16 @@ import CoreData
 import CoreLocation
 import MapKit
 
-class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UISearchBarDelegate, MapPinDelegate, MKMapViewDelegate {
-    
+class DetailViewController: UIViewController, UITableViewDelegate {
+	
+	// MARK: IBOutlets
+	
     @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var notificationTime: UISegmentedControl!
     @IBOutlet weak var mapView: MKMapView!
-    
+	
+	// MARK: Variables
+	
     var detailItem: ReminderList?
     let locationManager = CLLocationManager()
     var searchController = UISearchController(searchResultsController: nil)
@@ -73,6 +77,8 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
     }
+	
+	// MARK: Custom functions
     
     func configureView() {
         // update the user interface with the selected detail item if there was one
@@ -81,7 +87,9 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
             notificationTime.selectedSegmentIndex = UISegmentedControl.noSegment
             return
         }
-        
+		
+		// if an item has been loaded, change view controller title
+		self.title = "Editing a Reminder"
         reminderTextField.text = detail.text
         if detail.remindOnEntry {
             notificationTime.selectedSegmentIndex = 0
@@ -124,7 +132,8 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
             do {
                 try managedContext.save()
             } catch {
-                print("Failed to save")
+				// this should never be displayed but is here to cover the possibility
+                showAlert(title: "Save failed", message: "Notice: Data has not successfully been saved.")
             }
             return
         }
@@ -145,7 +154,8 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
         do {
             try managedContext.save()
         } catch {
-            print("Failed to save")
+		  	// this should never be displayed but is here to cover the possibility
+           showAlert(title: "Save failed", message: "Notice: Data has not successfully been saved.")
         }
     }
 	
@@ -175,37 +185,19 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 		  location.address = annotation
      }
 	
-	// add map annotation and region for location monitoring based on pin
-     func getLocation(for pin: MKPlacemark) {
-          selectedPin = pin
-          mapView.removeAnnotations(mapView.annotations)
-		  mapView.removeOverlays(mapView.overlays)
-          let annotation = MKPointAnnotation()
-          annotation.coordinate = pin.coordinate
-          annotation.title = pin.name
-		  annotation.subtitle = LocationManager.parseAddress(selectedItem: pin)
-			pinAddress = annotation.subtitle
-		
-		let regionRadius: CLLocationDistance = 500
-		
-		let region = MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
-		mapView.setRegion(region, animated: true)
-		
-		let circle = MKCircle(center: annotation.coordinate, radius: 50)
-		
-		mapView.addAnnotation(annotation)
-		mapView.addOverlay(circle)
-    }
 
-	
-	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-		let circleRenderer = MKCircleRenderer(circle: overlay as! MKCircle)
-			circleRenderer.fillColor = UIColor.blue.withAlphaComponent(0.5)
-			circleRenderer.strokeColor = UIColor.white
-			circleRenderer.lineWidth = 1.0
-			return circleRenderer
+	// limit text field characters to 50
+	func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+		let currentText = textField.text ?? ""
+		guard let stringRange = Range(range, in: currentText) else { return false }
+		
+		let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+		
+		return updatedText.count <= 50
 	}
-    
+	
+	// MARK: IBActions
+	
     @IBAction func saveTapped(_ sender: Any) {
 		if locationManager.monitoredRegions.count == 20 && selectedPin != nil {
 			showAlert(title: "Unable to save", message: "The maximum of 20 monitored locations has been met - please delete or modify an existing reminder.")
@@ -238,13 +230,11 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 				
 				 if locationManager.monitoredRegions.contains(geofenceArea) {
 					 showAlert(title: "Pre-existing Geofence", message: "The area you have selected is already being monitored - please select a different region.")
-					 print("area already in use")
 				 } else {
-					
 				 locationManager.startMonitoring(for: geofenceArea)
 				 print("\(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
 				 print("started monitoring")
-					}
+			   }
 			}
 			
 			// save entry and either pop back to view or reload table data depending on split view display
@@ -265,31 +255,31 @@ class DetailViewController: UIViewController, CLLocationManagerDelegate, UISearc
 
 
 // add location functionality
-extension DetailViewController {
+extension DetailViewController: CLLocationManagerDelegate, MKMapViewDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		// if a pin has been placed, don't proceed to detect and recenter on current location
 		if selectedPin != nil {
 			return
 		} else {
-		// if no item with an associated location is being shown, display current location
-		if detailItem?.reminderLocation?.address == nil {
-			 if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
-			   print("current location: \(lat) \(long)")
-				 let regionRadius: CLLocationDistance = 1000
-				
-				 let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
-				 mapView.setRegion(region, animated: true)
+			 // if no item with an associated location is being shown, display current location
+			 if detailItem?.reminderLocation?.address == nil {
+				  if let lat = locations.last?.coordinate.latitude, let long = locations.last?.coordinate.longitude, let location = locations.last {
+					print("current location: \(lat) \(long)")
+					  let regionRadius: CLLocationDistance = 1000
+					
+					  let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
+					  mapView.setRegion(region, animated: true)
+				  } else {
+					  showAlert(title: "Geolocation failed", message: "Coordinates could not be found. Please check that location services are enabled.")
+				  }
 			 } else {
-				 print("no coordinates found")
+				 return
 			 }
-		} else {
-			return
-		}
-    }
+		 }
 	}
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error)
+        showAlert(title: "Geolocation failed", message: "\(error)")
     }
     
     func lookUpCurrentLocation(completionHandler: @escaping (CLPlacemark?) -> Void ) {
@@ -314,17 +304,43 @@ extension DetailViewController {
             completionHandler(nil)
         }
     }
-    
-    func updateSearchResults(for searchController: UISearchController) {
-    }
 	
-	// limit text field characters to 50
-	func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-		let currentText = textField.text ?? ""
-		guard let stringRange = Range(range, in: currentText) else { return false }
+	// handle map overlays
+	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+		let circleRenderer = MKCircleRenderer(circle: overlay as! MKCircle)
+		circleRenderer.fillColor = UIColor.blue.withAlphaComponent(0.5)
+		circleRenderer.strokeColor = UIColor.white
+		circleRenderer.lineWidth = 1.0
+		return circleRenderer
+	}
+}
+
+extension DetailViewController: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate {
+	// function needed to satisfy compiler
+	func updateSearchResults(for searchController: UISearchController) {
+	}
+}
+
+extension DetailViewController: MapPinDelegate {
+	// add map annotation and region for location monitoring based on pin
+	func getLocation(for pin: MKPlacemark) {
+		selectedPin = pin
+		mapView.removeAnnotations(mapView.annotations)
+		mapView.removeOverlays(mapView.overlays)
+		let annotation = MKPointAnnotation()
+		annotation.coordinate = pin.coordinate
+		annotation.title = pin.name
+		annotation.subtitle = LocationManager.parseAddress(selectedItem: pin)
+		pinAddress = annotation.subtitle
 		
-		let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+		let regionRadius: CLLocationDistance = 500
 		
-		return updatedText.count <= 50
+		let region = MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
+		mapView.setRegion(region, animated: true)
+		
+		let circle = MKCircle(center: annotation.coordinate, radius: 50)
+		
+		mapView.addAnnotation(annotation)
+		mapView.addOverlay(circle)
 	}
 }

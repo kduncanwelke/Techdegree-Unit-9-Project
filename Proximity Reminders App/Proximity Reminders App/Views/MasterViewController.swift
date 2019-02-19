@@ -13,6 +13,8 @@ import CoreLocation
 
 class MasterViewController: UITableViewController, UISplitViewControllerDelegate {
 
+	// MARK: Variables
+	
     var detailViewController: DetailViewController? = nil
     var reminders: [ReminderList] = []
 	let locationManager = CLLocationManager()
@@ -45,6 +47,8 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
      
         loadReminders()
     }
+	
+	// MARK: Custom functions
      
      func loadReminders() {
           let managedContext = CoreDataManager.shared.managedObjectContext
@@ -53,7 +57,7 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
           do {
                reminders = try managedContext.fetch(fetchRequest)
           } catch let error as NSError {
-               print("could not fetch, \(error), \(error.userInfo)")
+			showAlert(title: "Could not retrieve data", message: "\(error.userInfo)")
           }
           
           tableView.reloadData()
@@ -61,10 +65,6 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
 
     @objc
     func insertNewObject(_ sender: Any) {
-        //objects.insert(NSDate(), at: 0)
-        //let indexPath = IndexPath(row: 0, section: 0)
-        //tableView.insertRows(at: [indexPath], with: .automatic)
-		
 		if locationManager.monitoredRegions.count == 20 {
 			showAlert(title: "Notice", message: "Maximum 20 locations are already been monitored. Further reminders with location monitoring cannot be added.")
 		}
@@ -85,7 +85,7 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
     	}
 	}
 
-    // MARK: - Segues
+    // MARK: Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
@@ -99,7 +99,7 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
         }
     }
 
-    // MARK: - Table View
+    // MARK: Table View
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -158,7 +158,8 @@ class MasterViewController: UITableViewController, UISplitViewControllerDelegate
           do {
                try managedContext.save()
           } catch {
-               print("Failed to save")
+			// this should never be displayed but is here to cover the possibility
+			showAlert(title: "Save failed", message: "Notice: Data has not successfully been saved.")
           }
 			
 		  // lastly remove item from table
